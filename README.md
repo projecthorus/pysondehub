@@ -15,6 +15,10 @@ sondehub.Stream().remove_sonde(serial)
 
 Adds or removes a radiosonde from the filter
 
+Data license
+--
+Data is provided under the [Creative Commons BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) license.
+
 Example Usage
 --
 
