@@ -7,6 +7,14 @@ If no `sondes` list is provided then all radiosondes will be streamed.
 
 On message callback will contain a python dictonary using the [Universal Sonde Telemetry Format](https://github.com/projecthorus/radiosonde_auto_rx/wiki/Suggested-Universal-Sonde-Telemetry-Format)
 
+
+```
+sondehub.Stream().add_sonde(serial)
+sondehub.Stream().remove_sonde(serial)
+```
+
+Adds or removes a radiosonde from the filter
+
 Example Usage
 --
 
