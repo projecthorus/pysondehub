@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "sondehub"
-version = "0.1.0"
+version = "0.1.3"
 description = ""
 authors = ["Michaela <git@michaela.lgbt>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.6"
 paho-mqtt = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
