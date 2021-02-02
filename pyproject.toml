@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "sondehub"
+version = "0.1.0"
+description = ""
+authors = ["Michaela <git@michaela.lgbt>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+paho-mqtt = "^1.5.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+sondehub = 'sondehub:__main__.main'
