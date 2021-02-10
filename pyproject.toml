@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sondehub"
-version = "0.1.5"
+version = "0.1.7"
 description = "SDK to access SondeHub open data"
 authors = ["Michaela <git@michaela.lgbt>"]
 readme = "README.md"
@@ -12,6 +12,7 @@ license = "GPL-3.0-or-later"
 [tool.poetry.dependencies]
 python = "^3.6"
 paho-mqtt = "^1.5.1"
+boto3 = "^1.14.44"
 
 [tool.poetry.dev-dependencies]
 

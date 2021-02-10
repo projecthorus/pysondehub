@@ -2,6 +2,14 @@ import paho.mqtt.client as mqtt
 from urllib.parse import urlparse
 import http.client
 import json
+import boto3
+import sys
+import threading
+from queue import Queue
+import queue
+
+
+S3_BUCKET = "sondehub-open-data"
 
 
 class Stream:
@@ -73,3 +81,58 @@ class Stream:
 
     def disconnect(self):
         self.mqttc.disconnect()
+
+
+class Downloader(threading.Thread):
+    def __init__(
+        self, tasks_to_accomplish, tasks_that_are_done, debug=False, *args, **kwargs
+    ):
+        self.tasks_to_accomplish = tasks_to_accomplish
+        self.tasks_that_are_done = tasks_that_are_done
+        self.debug = debug
+        super().__init__(*args, **kwargs)
+
+    def run(self):
+        s3 = boto3.client("s3")
+        while True:
+            try:
+                task = self.tasks_to_accomplish.get_nowait()
+            except queue.Empty:
+                return
+            data = s3.get_object(Bucket=task[0], Key=task[1])
+            response = json.loads(data["Body"].read())
+            if self.debug:
+                print(response)
+            self.tasks_that_are_done.put(response)
+            self.tasks_to_accomplish.task_done()
+
+
+def download(serial=None, datetime_prefix=None, debug=False):
+    if serial:
+        prefix_filter = f"serial/{serial}/"
+    elif serial and datetime_prefix:
+        prefix_filter = f"serial/{serial}/{datetime_prefix}"
+    elif datetime_prefix:
+        prefix_filter = f"date/{datetime_prefix}"
+    else:
+        prefix_filter = "date/"
+
+    s3 = boto3.resource("s3")
+    bucket = s3.Bucket(S3_BUCKET)
+    data = []
+
+    number_of_processes = 50
+    tasks_to_accomplish = Queue()
+    tasks_that_are_done = Queue()
+
+    for s3_object in bucket.objects.filter(Prefix=prefix_filter):
+        tasks_to_accomplish.put((s3_object.bucket_name, s3_object.key))
+
+    for _ in range(number_of_processes):
+        Downloader(tasks_to_accomplish, tasks_that_are_done, debug).start()
+    tasks_to_accomplish.join()
+
+    while not tasks_that_are_done.empty():
+        data.append(tasks_that_are_done.get())
+
+    return data

@@ -5,7 +5,7 @@ sondehub.Stream(sondes=["serial number"], on_message=callback)
 ```
 If no `sondes` list is provided then all radiosondes will be streamed.
 
-On message callback will contain a python dictonary using the [Universal Sonde Telemetry Format](https://github.com/projecthorus/radiosonde_auto_rx/wiki/Suggested-Universal-Sonde-Telemetry-Format)
+On message callback will contain a python dictonary using the [Universal Sonde Telemetry Format](https://github.com/projecthorus/radiosonde_auto_rx/wiki/SondeHub-DB-Universal-Telemetry-Format)
 
 
 ```
@@ -66,4 +66,16 @@ sondehub | jq .
 }
 ....
 
+```
+
+
+Open Data Access
+==
+
+A basic interface to the Open Data is a available using `sondehub.download(serial=None, datetime_prefix=None)`
+
+```
+import sondehub
+frames = sondehub.download(datetime_prefix="2018-10-01")
+frames = sondehub.download(serial="serial")
 ```
