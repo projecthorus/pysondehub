@@ -3,6 +3,8 @@ from urllib.parse import urlparse
 import http.client
 import json
 import boto3
+from botocore import UNSIGNED
+from botocore.config import Config
 import sys
 import threading
 from queue import Queue
@@ -93,7 +95,7 @@ class Downloader(threading.Thread):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        s3 = boto3.client("s3")
+        s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
         while True:
             try:
                 task = self.tasks_to_accomplish.get_nowait()
@@ -117,7 +119,7 @@ def download(serial=None, datetime_prefix=None, debug=False):
     else:
         prefix_filter = "date/"
 
-    s3 = boto3.resource("s3")
+    s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED))
     bucket = s3.Bucket(S3_BUCKET)
     data = []
 
