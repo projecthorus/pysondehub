@@ -55,8 +55,6 @@ class Stream:
             pass
         self.mqttc.connect(urlparts.netloc, 443, 60)
         self.mqttc.loop_start()
-        for sonde in self._sondes:
-            self.add_sonde(sonde)
 
     def get_url(self):
         conn = http.client.HTTPSConnection("api.v2.sondehub.org")
@@ -70,6 +68,8 @@ class Stream:
             self.on_message(json.loads(msg.payload))
 
     def _on_connect(self, mqttc, obj, flags, rc):
+        for sonde in self._sondes:
+            self.add_sonde(sonde)
         if mqtt.MQTT_ERR_SUCCESS != rc:
             self.ws_connect()
         if self.on_connect:
