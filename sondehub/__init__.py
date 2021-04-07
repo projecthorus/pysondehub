@@ -126,6 +126,8 @@ class Downloader(threading.Thread):
                 task = self.tasks_to_accomplish.get_nowait()
             except queue.Empty:
                 return
+            if self.debug:
+                print(task[1])
             data = s3.get_object(Bucket=task[0], Key=task[1])
             response = json.loads(data["Body"].read())
             if self.debug:
@@ -134,11 +136,11 @@ class Downloader(threading.Thread):
             self.tasks_to_accomplish.task_done()
 
 
-def download(serial=None, datetime_prefix=None, debug=False):
+def download(serial=None, datetime_prefix=None, hashed=True, debug=False):
     if serial:
-        prefix_filter = f"serial/{serial}/"
+        prefix_filter = f"serial{'-hashed' if hashed else ''}/{serial}/"
     elif serial and datetime_prefix:
-        prefix_filter = f"serial/{serial}/{datetime_prefix}"
+        prefix_filter = f"serial{'-hashed' if hashed else ''}/{serial}/{datetime_prefix}"
     elif datetime_prefix:
         prefix_filter = f"date/{datetime_prefix}"
     else:

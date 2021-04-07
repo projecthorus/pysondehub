@@ -35,7 +35,8 @@ while 1:
 
 ```
 
-CLI Usage
+### CLI Usage
+#### Live streaming data
 ```sh
 # all radiosondes
 sondehub
@@ -66,6 +67,11 @@ sondehub | jq .
 }
 ....
 
+```
+
+#### Downloading data
+```
+sondehub --download S2810113 # Note this may take a long time to finish!
 ```
 
 
