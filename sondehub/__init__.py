@@ -20,7 +20,7 @@ class Stream:
                  on_connect=None,
                  on_message=None,
                  on_log=None,
-                 on_disconnect=None, asJson=True):
+                 on_disconnect=None, asJson=False):
         self.mqttc = mqtt.Client(transport="websockets")
         self._sondes = sondes
         self.asJson = asJson
@@ -78,9 +78,9 @@ class Stream:
     def _on_message(self, mqttc, obj, msg):
         if self.on_message:
             if self.asJson:
-                self.on_message(json.loads(msg.payload))
-            else:
                 self.on_message(msg.payload)
+            else:
+                self.on_message(json.loads(msg.payload))
 
     def _on_connect(self, mqttc, obj, flags, rc):
         for sonde in self._sondes:
