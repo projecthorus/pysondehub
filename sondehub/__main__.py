@@ -47,9 +47,8 @@ def main():
     ):  # we need to drop the default value if the user specifies specific sondes
         args.sondes = args.sondes[1:]
     sondes = [item for sublist in args.sondes for item in sublist]
-    test = sondehub.Stream(on_message=on_message, sondes=sondes)
-    while 1:
-        time.sleep(0.01) # don't overwork the CPU waiting for events
+    test = sondehub.Stream(on_message=on_message, sondes=sondes, auto_start_loop=False)
+    test.loop_forever()
 
 
 if __name__ == "__main__":

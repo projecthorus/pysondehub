@@ -13,6 +13,8 @@ import queue
 
 S3_BUCKET = "sondehub-open-data"
 
+class LoopStartedError(Exception):
+    pass
 
 class Stream:
     def __init__(self,
@@ -20,7 +22,8 @@ class Stream:
                  on_connect=None,
                  on_message=None,
                  on_log=None,
-                 on_disconnect=None, asJson=False):
+                 on_disconnect=None, asJson=False,
+                 auto_start_loop=None):
         self.mqttc = mqtt.Client(transport="websockets")
         self._sondes = sondes
         self.asJson = asJson
@@ -28,6 +31,9 @@ class Stream:
         self.on_message = on_message
         self.on_disconnect = on_disconnect
         self.on_log = on_log
+        if auto_start_loop is None:
+            auto_start_loop = True
+        self.auto_start_loop = auto_start_loop
         self.ws_connect()
 
 
@@ -66,7 +72,8 @@ class Stream:
             self.mqttc.connect(urlparts.netloc, 443, 60)
         except OSError:
             pass
-        self.mqttc.loop_start()
+        if self.auto_start_loop:
+            self.mqttc.loop_start()
 
     def get_url(self):
         conn = http.client.HTTPSConnection("api.v2.sondehub.org")
@@ -108,6 +115,25 @@ class Stream:
 
     def disconnect(self):
         self.mqttc.disconnect()
+    
+    def loop_start(self):
+        if self.auto_start_loop:
+            raise LoopStartedError()
+        self.mqttc.loop_start()
+    
+    def loop_stop(self):
+        self.mqttc.loop_stop()
+        self.auto_start_loop = False
+    
+    def loop_step(self, timeout=1.0):
+        if self.auto_start_loop:
+            raise LoopStartedError()        
+        self.mqttc.loop(timeout)
+    
+    def loop_forever(self):
+        if self.auto_start_loop:
+            raise LoopStartedError()        
+        self.mqttc.loop_forever()
 
 
 class Downloader(threading.Thread):
