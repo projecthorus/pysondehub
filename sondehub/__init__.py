@@ -13,8 +13,6 @@ import queue
 
 S3_BUCKET = "sondehub-open-data"
 
-class LoopStartedError(Exception):
-    pass
 
 class Stream:
     def __init__(self,
@@ -23,7 +21,7 @@ class Stream:
                  on_message=None,
                  on_log=None,
                  on_disconnect=None, asJson=False,
-                 auto_start_loop=None):
+                 auto_start_loop=True):
         self.mqttc = mqtt.Client(transport="websockets")
         self._sondes = sondes
         self.asJson = asJson
@@ -31,11 +29,13 @@ class Stream:
         self.on_message = on_message
         self.on_disconnect = on_disconnect
         self.on_log = on_log
-        if auto_start_loop is None:
-            auto_start_loop = True
         self.auto_start_loop = auto_start_loop
         self.ws_connect()
 
+        self.loop_start = self.mqttc.loop_start
+        self.loop_stop = self.mqttc.loop_stop
+        self.loop_step = self.mqttc.loop
+        self.loop_forever = self.mqttc.loop_forever
 
     def add_sonde(self, sonde):
         if sonde not in self._sondes:
@@ -115,25 +115,6 @@ class Stream:
 
     def disconnect(self):
         self.mqttc.disconnect()
-    
-    def loop_start(self):
-        if self.auto_start_loop:
-            raise LoopStartedError()
-        self.mqttc.loop_start()
-    
-    def loop_stop(self):
-        self.mqttc.loop_stop()
-        self.auto_start_loop = False
-    
-    def loop_step(self, timeout=1.0):
-        if self.auto_start_loop:
-            raise LoopStartedError()        
-        self.mqttc.loop(timeout)
-    
-    def loop_forever(self):
-        if self.auto_start_loop:
-            raise LoopStartedError()        
-        self.mqttc.loop_forever()
 
 
 class Downloader(threading.Thread):
