@@ -35,6 +35,15 @@ while 1:
 
 ```
 
+Advanced Usage
+--
+Manual usage of the Paho MQTT network loop can be obtained by using the `loop`, `loop_forever`, `loop_start` and `loop_stop` functions, taking care to ensure that the different types of network loop aren't mixed. See Paho documentation [here](https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#network-loop).
+
+```python
+test = sondehub.Stream(on_message=on_message, sondes=sondes, auto_start_loop=False)
+test.loop_forever()
+```
+
 ### CLI Usage
 #### Live streaming data
 ```sh

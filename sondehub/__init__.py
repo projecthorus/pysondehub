@@ -34,7 +34,7 @@ class Stream:
 
         self.loop_start = self.mqttc.loop_start
         self.loop_stop = self.mqttc.loop_stop
-        self.loop_step = self.mqttc.loop
+        self.loop = self.mqttc.loop
         self.loop_forever = self.mqttc.loop_forever
 
     def add_sonde(self, sonde):
