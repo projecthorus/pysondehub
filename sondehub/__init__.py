@@ -9,9 +9,9 @@ import sys
 import threading
 from queue import Queue
 import queue
+import gzip
 
-
-S3_BUCKET = "sondehub-open-data"
+S3_BUCKET = "sondehub-history"
 
 
 class Stream:
@@ -127,7 +127,7 @@ class Downloader(threading.Thread):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
+        s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED))
         while True:
             try:
                 task = self.tasks_to_accomplish.get_nowait()
@@ -135,24 +135,25 @@ class Downloader(threading.Thread):
                 return
             if self.debug:
                 print(task[1])
-            data = s3.get_object(Bucket=task[0], Key=task[1])
-            response = json.loads(data["Body"].read())
+            obj = s3.Object(task[0], task[1])
+            try:
+                with gzip.GzipFile(fileobj=obj.get()["Body"]) as gzipfile:
+                    response = json.loads(gzipfile.read())
+            except gzip.BadGzipFile:
+                response = json.loads(obj.get()["Body"].read())
             if self.debug:
                 print(response)
             self.tasks_that_are_done.put(response)
             self.tasks_to_accomplish.task_done()
 
 
-def download(serial=None, datetime_prefix=None, hashed=True, debug=False):
+def download(serial=None, datetime_prefix=None, debug=False):
     if serial:
-        prefix_filter = f"serial{'-hashed' if hashed else ''}/{serial}/"
-    elif serial and datetime_prefix:
-        prefix_filter = f"serial{'-hashed' if hashed else ''}/{serial}/{datetime_prefix}"
+        prefix_filter = f"serial/{serial}.json.gz"
     elif datetime_prefix:
         prefix_filter = f"date/{datetime_prefix}"
     else:
         prefix_filter = "date/"
-
     s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED))
     bucket = s3.Bucket(S3_BUCKET)
     data = []
@@ -169,6 +170,6 @@ def download(serial=None, datetime_prefix=None, hashed=True, debug=False):
     tasks_to_accomplish.join()
 
     while not tasks_that_are_done.empty():
-        data.append(tasks_that_are_done.get())
+        data = data + tasks_that_are_done.get()
 
     return data

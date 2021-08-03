@@ -80,17 +80,17 @@ sondehub | jq .
 
 #### Downloading data
 ```
-sondehub --download S2810113 # Note this may take a long time to finish!
+sondehub --download S2810113
 ```
 
 
 Open Data Access
 ==
 
-A basic interface to the Open Data is a available using `sondehub.download(serial=None, datetime_prefix=None)`
+A basic interface to the Open Data is a available using `sondehub.download(serial=, datetime_prefix=)`. When using datetime_prefix only summary data is provided (the oldest, newest and highest frames)
 
 ```
 import sondehub
-frames = sondehub.download(datetime_prefix="2018-10-01")
+frames = sondehub.download(datetime_prefix="2018/10/01")
 frames = sondehub.download(serial="serial")
 ```
