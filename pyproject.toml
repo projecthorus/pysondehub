@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sondehub"
-version = "0.2.0"
+version = "0.2.1"
 description = "SDK to access SondeHub open data"
 authors = ["Michaela <git@michaela.lgbt>"]
 readme = "README.md"

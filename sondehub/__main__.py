@@ -35,6 +35,14 @@ def main():
         type=str,
         action="append",
     )
+    group.add_argument(
+        "--amateur",
+        dest="prefix",
+        const="amateur",
+        default="sondes",
+        help="Connect to amateur endpoint",
+        action="store_const",
+    )
     args = parser.parse_args()
     if (args.download):
         serials = [item for sublist in args.download for item in sublist]
@@ -47,7 +55,7 @@ def main():
     ):  # we need to drop the default value if the user specifies specific sondes
         args.sondes = args.sondes[1:]
     sondes = [item for sublist in args.sondes for item in sublist]
-    test = sondehub.Stream(on_message=on_message, sondes=sondes, auto_start_loop=False)
+    test = sondehub.Stream(on_message=on_message, sondes=sondes, auto_start_loop=False, prefix=args.prefix)
     test.loop_forever()
 
 

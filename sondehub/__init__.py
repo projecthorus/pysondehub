@@ -21,7 +21,8 @@ class Stream:
                  on_message=None,
                  on_log=None,
                  on_disconnect=None, asJson=False,
-                 auto_start_loop=True):
+                 auto_start_loop=True,
+                 prefix="sondes"):
         self.mqttc = mqtt.Client(transport="websockets")
         self._sondes = sondes
         self.asJson = asJson
@@ -30,6 +31,7 @@ class Stream:
         self.on_disconnect = on_disconnect
         self.on_log = on_log
         self.auto_start_loop = auto_start_loop
+        self.prefix = prefix
         self.ws_connect()
 
         self.loop_start = self.mqttc.loop_start
@@ -40,13 +42,13 @@ class Stream:
     def add_sonde(self, sonde):
         if sonde not in self._sondes:
             self._sondes.append(sonde)
-        (result, mid) = self.mqttc.subscribe(f"sondes/{sonde}", 0)
+        (result, mid) = self.mqttc.subscribe(f"{self.prefix}/{sonde}", 0)
         if result != mqtt.MQTT_ERR_SUCCESS:
             self.ws_connect()
 
     def remove_sonde(self, sonde):
         self._sondes.remove(sonde)
-        (result, mid) = self.mqttc.unsubscribe(f"sondes/{sonde}", 0)
+        (result, mid) = self.mqttc.unsubscribe(f"{self.prefix}/{sonde}", 0)
         if result != mqtt.MQTT_ERR_SUCCESS:
             self.ws_connect()
 
