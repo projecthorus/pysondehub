@@ -398,6 +398,7 @@ class Uploader(object):
         try:
             _start_time = time.time()
             _telem_json = json.dumps(telem_list).encode("utf-8")
+            logging.debug(f"Sondehub Amateur Uploader - Generated Packet: {str(_telem_json)}")
             _compressed_payload = gzip.compress(_telem_json)
         except Exception as e:
             self.log_error(
@@ -431,6 +432,7 @@ class Uploader(object):
                     "Content-Type": "application/json",
                     "Date": formatdate(timeval=None, localtime=False, usegmt=True),
                 }
+                logging.debug(f"Sondehub Amateur Uploader - Upload Headers: {str(headers)}")
                 _req = requests.put(
                     self.SONDEHUB_AMATEUR_URL,
                     _compressed_payload,
@@ -623,9 +625,10 @@ if __name__ == "__main__":
 
     _test = Uploader(
         "N0CALL-DEV-TESTING",
-        uploader_position=[0.1,0.1, 0],
+        uploader_position=[0.1,0.1,0],
         uploader_radio="Testing pysondehub",
-        uploader_antenna="Testing pysondehub"
+        uploader_antenna="Testing pysondehub",
+        developer_mode=True
     )
     _test.upload_station_position(
         "N0CALL-DEV-TESTING",
