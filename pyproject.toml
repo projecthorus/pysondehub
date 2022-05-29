@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "sondehub"
-version = "0.2.1"
-description = "SDK to access SondeHub open data"
+version = "0.3.0"
+description = "SDK to access SondeHub open data, and helpers for uploading telemetry."
 authors = ["Michaela <git@michaela.lgbt>"]
 readme = "README.md"
 homepage = "https://github.com/projecthorus/pysondehub"
@@ -13,6 +13,8 @@ license = "GPL-3.0-or-later"
 python = "^3.6"
 paho-mqtt = "^1.5.1"
 boto3 = "^1.14.44"
+requests = "^2.24.0"
+python-dateutil = "^2.8"
 
 [tool.poetry.dev-dependencies]
 

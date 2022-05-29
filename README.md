@@ -1,4 +1,25 @@
-Simple realtime streaming SDK for sondehub.org V2 API.
+# SondeHub (and SondeHub-Amateur) Python Library
+
+This repository contains:
+* A uploader class for submitting high-altitude balloon telemetry data to SondeHub-Amateur
+* A simple realtime streaming SDK for the sondehub.org V2 API (both radiosondes, and amateur balloons).
+
+### Contacts
+* [Mark Jessop](https://github.com/darksidelemm) - vk5qi@rfhead.net
+* [Michaela Wheeler](https://github.com/TheSkorm) - radiosonde@michaela.lgbt
+
+You can often find us in the #highaltitude IRC Channel on Libera Chat.
+
+## Installing
+This library is available via pypi, and can be installed into your Python environment using:
+```
+pip install sondehub
+```
+
+## Submitting Telemetry to SondeHub-Amateur
+A guide on using the SondeHub-Amateur uploader class is available here https://github.com/projecthorus/pysondehub/wiki/SondeHub-Amateur-Uploader-Class-Usage
+
+## Streaming Telemetry Data
 
 ```
 sondehub.Stream(sondes=["serial number"], on_message=callback)
@@ -15,12 +36,12 @@ sondehub.Stream().remove_sonde(serial)
 
 Adds or removes a radiosonde from the filter
 
-Data license
---
+### Data license
+
 Data is provided under the [Creative Commons BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) license.
 
-Example Usage
---
+### Example Usage
+
 
 ```python
 import sondehub
@@ -35,8 +56,8 @@ while 1:
 
 ```
 
-Advanced Usage
---
+### Advanced Usage
+
 Manual usage of the Paho MQTT network loop can be obtained by using the `loop`, `loop_forever`, `loop_start` and `loop_stop` functions, taking care to ensure that the different types of network loop aren't mixed. See Paho documentation [here](https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#network-loop).
 
 ```python
@@ -84,8 +105,7 @@ sondehub --download S2810113
 ```
 
 
-Open Data Access
-==
+## Open Data Access
 
 A basic interface to the Open Data is a available using `sondehub.download(serial=, datetime_prefix=)`. When using datetime_prefix only summary data is provided (the oldest, newest and highest frames)
 
