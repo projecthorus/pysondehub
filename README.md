@@ -19,29 +19,10 @@ pip install sondehub
 ## Submitting Telemetry to SondeHub-Amateur
 A guide on using the SondeHub-Amateur uploader class is available here https://github.com/projecthorus/pysondehub/wiki/SondeHub-Amateur-Uploader-Class-Usage
 
-## Streaming Telemetry Data
 
-```
-sondehub.Stream(sondes=["serial number"], on_message=callback)
-```
-If no `sondes` list is provided then all radiosondes will be streamed.
+## Streaming Telemetry from Sondehub or Sondehub-Amateur
 
-On message callback will contain a python dictonary using the [Universal Sonde Telemetry Format](https://github.com/projecthorus/radiosonde_auto_rx/wiki/SondeHub-DB-Universal-Telemetry-Format)
-
-
-```
-sondehub.Stream().add_sonde(serial)
-sondehub.Stream().remove_sonde(serial)
-```
-
-Adds or removes a radiosonde from the filter
-
-### Data license
-
-Data is provided under the [Creative Commons BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) license.
-
-### Example Usage
-
+To obtain live telemetry from Sondehub, the sondehub class can be used as follows:
 
 ```python
 import sondehub
@@ -49,14 +30,50 @@ import sondehub
 def on_message(message):
     print(message)
 
-test = sondehub.Stream(sondes=["R3320848"], on_message=on_message)
-#test = sondehub.Stream(on_message=on_message)
+test = sondehub.Stream(on_message=on_message)
 while 1:
     pass
 
 ```
 
-### Advanced Usage
+The `on_message` callback will be passed a python dictonary using the [Universal Sonde Telemetry Format](https://github.com/projecthorus/radiosonde_auto_rx/wiki/SondeHub-DB-Universal-Telemetry-Format), or [Amateur Telemetry Format](https://github.com/projecthorus/sondehub-infra/wiki/%5BDRAFT%5D-Amateur-Balloon-Telemetry-Format)
+
+### Filtering
+To specify a particular serial number, or multiple serial numbers to subscribe to, you can pass these in as a list in the `sondes` argument:
+```python
+import sondehub
+
+def on_message(message):
+    print(message)
+
+test = sondehub.Stream(on_message=on_message, sondes=["R3320848"])
+while 1:
+    pass
+
+```
+
+Alternatively, you can add or remove serial numbers from the filter after the stream has started using the `.add_sonde("serial")` and `.remove_sonde("serial")` functions.
+e.g.:
+```
+test.add_sonde("R3320848")
+test.remove_sonde("R3320848")
+```
+
+### Amateur Launches
+Amateur balloon launches can be received by subscribing to the `amateur` topic, using the `prefix` argument as follows:
+```
+import sondehub
+
+def on_message(message):
+    print(message)
+
+test = sondehub.Stream(on_message=on_message, prefix="amateur")
+
+while 1:
+    pass
+```
+
+## Advanced Usage
 
 Manual usage of the Paho MQTT network loop can be obtained by using the `loop`, `loop_forever`, `loop_start` and `loop_stop` functions, taking care to ensure that the different types of network loop aren't mixed. See Paho documentation [here](https://www.eclipse.org/paho/index.php?page=clients/python/docs/index.php#network-loop).
 
@@ -99,7 +116,15 @@ sondehub | jq .
 
 ```
 
-#### Downloading data
+For amateur radiosondes, just append the `--amateur` argument. e.g.:
+
+```
+sondehub --amateur
+```
+
+
+## Downloading Archived Radiosonde Telemetry Data
+Archived radiosonde telemetry data (Meteorological Radiosondes only) can be downloaded from our S3 bucket using:
 ```
 sondehub --download S2810113
 ```
@@ -114,3 +139,7 @@ import sondehub
 frames = sondehub.download(datetime_prefix="2018/10/01")
 frames = sondehub.download(serial="serial")
 ```
+
+## Data license
+
+Data is provided under the [Creative Commons BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) license.
