@@ -350,9 +350,6 @@ class Uploader(object):
             telemetry (dict): Telemetry dictionary to add to the input queue.
         """
 
-        if self.inhibit:
-            return
-
         # Add it to the queue if we are running.
         if self.input_processing_running:
             self.input_queue.put(telemetry)
