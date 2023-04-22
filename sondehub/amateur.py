@@ -326,6 +326,10 @@ class Uploader(object):
                 if _field not in output:
                     output[_field] = extra_fields[_field]
 
+        # Add software details
+        output["software_name"] = self.software_name
+        output["software_version"] = self.software_version
+
         
         logging.debug(f"Sondehub Amateur Uploader - Generated Packet: {str(output)}")
 
