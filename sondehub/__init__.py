@@ -12,7 +12,7 @@ import queue
 import gzip
 
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 S3_BUCKET = "sondehub-history"
 
