@@ -14,7 +14,8 @@ import gzip
 
 __version__ = "0.3.2"
 
-S3_BUCKET = "sondehub-history"
+S3_BUCKET = "history"
+HISTORY_DOMAIN = "sondehub.org"
 
 
 class Stream:
@@ -132,7 +133,7 @@ class Downloader(threading.Thread):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED))
+        s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED, s3={'addressing_style': 'virtual'}),endpoint_url=f"https://{HISTORY_DOMAIN}/")
         while True:
             try:
                 task = self.tasks_to_accomplish.get_nowait()
@@ -159,7 +160,7 @@ def download(serial=None, datetime_prefix=None, debug=False):
         prefix_filter = f"date/{datetime_prefix}"
     else:
         prefix_filter = "date/"
-    s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED))
+    s3 = boto3.resource("s3", config=Config(signature_version=UNSIGNED, s3={'addressing_style': 'virtual'}), endpoint_url=f"https://{HISTORY_DOMAIN}/")
     bucket = s3.Bucket(S3_BUCKET)
     data = []
 
